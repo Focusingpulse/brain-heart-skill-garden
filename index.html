@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skill Garden · Brain + Heart Gym</title>
+  <meta name="description" content="A playful map of trainable human capacities." />
+  <style>
+    :root {
+      --ink: #eaf8ff;
+      --muted: #8ca8b8;
+      --bg: #07131d;
+      --panel: rgba(11, 31, 44, .8);
+      --line: rgba(132, 222, 255, .18);
+      --cyan: #74e6ff;
+      --mint: #82f1c2;
+      --pink: #ff86ba;
+      --gold: #ffd17a;
+      --shadow: 0 22px 80px rgba(0, 0, 0, .32);
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 15% 10%, rgba(45, 126, 168, .2), transparent 32rem), radial-gradient(circle at 90% 18%, rgba(178, 70, 138, .16), transparent 30rem), var(--bg); }
+    button { font: inherit; }
+    .shell { width: min(1440px, 100%); margin: 0 auto; padding: 28px clamp(18px, 4vw, 64px) 64px; }
+    .topbar { display:flex; justify-content:space-between; gap: 20px; align-items: flex-start; margin-bottom: 42px; }
+    .eyebrow { color: var(--mint); letter-spacing: .18em; text-transform: uppercase; font-size: .72rem; font-weight: 700; }
+    h1 { font-size: clamp(2.2rem, 5vw, 5.3rem); line-height: .95; letter-spacing: -.07em; max-width: 760px; margin: 12px 0 16px; }
+    .lede { color: #bad0db; max-width: 650px; font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.6; margin: 0; }
+    .badge { border: 1px solid var(--line); background: rgba(6, 22, 32, .6); border-radius: 999px; color: var(--muted); padding: 10px 14px; white-space: nowrap; font-size: .78rem; }
+    .badge strong { color: var(--mint); }
+    .atlas { display:grid; grid-template-columns: minmax(320px, 1.04fr) minmax(320px, .96fr); gap: 18px; align-items: stretch; }
+    .stage, .details, .library, .principles { border: 1px solid var(--line); background: linear-gradient(135deg, rgba(15, 42, 57, .82), rgba(6, 21, 31, .84)); box-shadow: var(--shadow); border-radius: 28px; }
+    .stage { min-height: 590px; position: relative; overflow: hidden; padding: 22px; }
+    .stage:before { content:""; position:absolute; inset: 14% 10%; border: 1px solid rgba(116,230,255,.1); border-radius: 50%; transform: rotate(-12deg); box-shadow: 0 0 100px rgba(95, 215, 247, .08); pointer-events:none; }
+    .stage-label { position: relative; display:flex; justify-content:space-between; align-items:center; color: var(--muted); font-size: .78rem; text-transform:uppercase; letter-spacing:.12em; }
+    .stage-label span:last-child { color: var(--cyan); }
+    .constellation { position: relative; min-height: 508px; display:flex; align-items:center; justify-content:center; gap: 6%; }
+    .constellation { perspective: 900px; transform-style: preserve-3d; }
+    .constellation:before, .constellation:after { content:""; position:absolute; width:72%; height:31%; border:1px solid rgba(116,230,255,.1); border-radius:50%; transform:rotateX(65deg) rotateZ(-10deg); animation:orbit 18s linear infinite; pointer-events:none; }
+    .constellation:after { width:57%; height:24%; border-color:rgba(255,134,186,.1); transform:rotateY(65deg) rotateZ(22deg); animation-direction:reverse; animation-duration:23s; }
+    @keyframes orbit { to { transform:rotateX(65deg) rotateZ(350deg); } }
+    .orb { position: relative; width: 43%; max-width: 245px; aspect-ratio: 1 / 1.14; display:grid; place-items:center; transform:translateZ(20px); animation:float 7s ease-in-out infinite; }
+    .orb.heart { animation-delay:-2.8s; }
+    @keyframes float { 0%,100% { transform:translate3d(0, 3px, 20px); } 50% { transform:translate3d(0, -8px, 35px); } }
+    .orb svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 24px rgba(116,230,255,.2)); }
+    .orb.heart svg { filter: drop-shadow(0 0 28px rgba(255,134,186,.3)); }
+    .orb-name { position:absolute; bottom: 5%; left: 50%; transform:translateX(-50%); font-weight: 700; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .node { cursor:pointer; transition: transform .2s, filter .2s; transform-origin:center; }
+    .node:hover, .node.active { filter: brightness(1.45) drop-shadow(0 0 12px currentColor); transform: scale(1.12); }
+    .node text { fill: var(--ink); font-size: 11px; pointer-events:none; text-anchor: middle; dominant-baseline: middle; }
+    .brain-node { color: var(--cyan); }
+    .heart-node { color: var(--pink); }
+    .bridge { position:absolute; left: 38%; right: 38%; top: 51%; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); box-shadow: 0 0 20px var(--gold); opacity: .8; }
+    .bridge:after { content:"mind ↔ state"; position:absolute; top: 10px; left:50%; transform:translateX(-50%); font-size:.68rem; color:var(--gold); white-space:nowrap; letter-spacing:.1em; text-transform:uppercase; }
+    .details { padding: 28px; display:flex; flex-direction:column; justify-content:space-between; min-height: 590px; }
+    .selection-kicker { color: var(--cyan); text-transform:uppercase; letter-spacing:.15em; font-size:.72rem; font-weight:700; }
+    h2 { font-size: clamp(1.8rem, 3vw, 3rem); line-height:1; letter-spacing:-.05em; margin: 12px 0; }
+    .details p { color: #b4cad5; line-height:1.6; margin: 0; }
+    .skill-tags { display:flex; flex-wrap:wrap; gap:8px; margin: 22px 0; }
+    .tag { border:1px solid var(--line); border-radius:999px; color:var(--muted); padding:7px 10px; font-size:.76rem; }
+    .tag.primary { border-color:rgba(130,241,194,.45); color:var(--mint); background:rgba(130,241,194,.08); }
+    .metric { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 22px 0; }
+    .metric div { background:rgba(2, 13, 20, .38); border:1px solid rgba(132,222,255,.1); padding:12px; border-radius:15px; }
+    .metric small { display:block; color:var(--muted); font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; margin-bottom: 5px; }
+    .metric strong { font-size:.95rem; }
+    .cta { border:0; border-radius: 14px; padding: 14px 18px; color:#05151b; background:linear-gradient(100deg, var(--mint), var(--cyan)); font-weight:800; cursor:pointer; box-shadow: 0 10px 30px rgba(116,230,255,.16); transition: transform .2s, box-shadow .2s; }
+    .cta:hover { transform:translateY(-2px); box-shadow: 0 16px 38px rgba(116,230,255,.28); }
+    .stage-progress { position:relative; display:flex; align-items:center; gap:10px; margin-top:8px; color:var(--muted); font-size:.72rem; }
+    .progress-track { height:5px; flex:1; background:rgba(132,222,255,.12); border-radius:99px; overflow:hidden; }
+    .progress-fill { height:100%; width:0%; border-radius:inherit; background:linear-gradient(90deg,var(--mint),var(--cyan)); box-shadow:0 0 12px var(--cyan); transition:width .4s ease; }
+    .connections { position:absolute; inset:22% 14% 14%; pointer-events:none; opacity:.5; }
+    .connections line { stroke:#74e6ff; stroke-opacity:.25; stroke-width:1; transition:stroke-opacity .5s, stroke-width .5s; }
+    .connections line.awake { stroke:#82f1c2; stroke-opacity:.9; stroke-width:2; filter:drop-shadow(0 0 5px #82f1c2); }
+    .orb svg { transition:filter .5s; }
+    .orb.energized svg { filter:drop-shadow(0 0 34px rgba(130,241,194,.58)) drop-shadow(0 0 70px rgba(116,230,255,.25)); }
+    .heart.energized svg { filter:drop-shadow(0 0 36px rgba(255,134,186,.62)) drop-shadow(0 0 70px rgba(255,209,122,.2)); }
+    .micro { color:var(--muted); font-size:.77rem; line-height:1.5; margin-top:12px !important; }
+    .library { margin-top: 18px; padding: 28px; }
+    .section-head { display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom: 18px; }
+    .section-head h2 { margin:0; font-size: clamp(1.6rem, 3vw, 2.5rem); }
+    .section-head p { color:var(--muted); margin:0; max-width:450px; text-align:right; line-height:1.5; font-size:.9rem; }
+    .cards { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .game-card { border:1px solid rgba(132,222,255,.13); border-radius:18px; padding:18px; background:rgba(4, 17, 26, .54); min-height:220px; display:flex; flex-direction:column; }
+    .game-card:hover { border-color: rgba(116,230,255,.45); background:rgba(8, 31, 43, .7); }
+    .game-card .type { color:var(--gold); font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; }
+    .game-card h3 { margin:10px 0 7px; font-size:1.1rem; }
+    .game-card p { color:var(--muted); line-height:1.45; font-size:.86rem; margin:0 0 14px; }
+    .card-foot { margin-top:auto; display:flex; justify-content:space-between; color:#b5cbd3; font-size:.72rem; align-items:center; gap:8px; }
+    .play-card { border:1px solid rgba(130,241,194,.35); border-radius:9px; background:rgba(130,241,194,.08); color:var(--mint); padding:6px 9px; cursor:pointer; font-size:.72rem; }
+    .play-card:hover { background:rgba(130,241,194,.18); }
+    .progress-panel { margin-top:18px; display:grid; grid-template-columns:1.1fr .9fr; gap:14px; }
+    .progress-card, .reflection-card { border:1px solid rgba(132,222,255,.13); border-radius:18px; padding:20px; background:rgba(4,17,26,.54); }
+    .progress-card h3, .reflection-card h3 { margin:0 0 8px; font-size:1.05rem; }
+    .progress-card p, .reflection-card p { color:var(--muted); font-size:.85rem; line-height:1.5; margin:0 0 14px; }
+    .stat-row { display:flex; justify-content:space-between; color:var(--muted); font-size:.74rem; margin:10px 0 5px; }
+    .stat-row strong { color:var(--ink); }
+    .reflection-prompts { display:flex; flex-wrap:wrap; gap:8px; }
+    .prompt { color:#c3d9df; border:1px solid rgba(255,209,122,.25); background:rgba(255,209,122,.06); padding:8px 10px; border-radius:11px; font-size:.76rem; }
+    .principles { margin-top:18px; padding: 22px 28px; display:flex; gap:28px; align-items:center; }
+    .principles h2 { font-size:1.4rem; min-width:190px; margin:0; }
+    .principles p { color:var(--muted); line-height:1.55; margin:0; font-size:.9rem; }
+    .modal-backdrop { position:fixed; inset:0; background:rgba(2,9,14,.72); backdrop-filter: blur(10px); display:none; place-items:center; padding:18px; z-index:10; }
+    .modal-backdrop.open { display:grid; }
+    .modal { width:min(660px, 100%); background:#0a202d; border:1px solid rgba(116,230,255,.3); border-radius:25px; box-shadow:0 30px 100px #000; padding:26px; position:relative; }
+    .close { position:absolute; right:16px; top:14px; background:none; border:0; color:var(--muted); cursor:pointer; font-size:1.5rem; }
+    .target-board { height:260px; margin:20px 0; border-radius:18px; border:1px solid rgba(116,230,255,.18); background:radial-gradient(circle, rgba(116,230,255,.08), transparent 60%), #06151f; position:relative; overflow:hidden; cursor:crosshair; }
+    .target { width:45px; height:45px; border-radius:50%; position:absolute; display:none; place-items:center; background:var(--mint); color:#031316; font-weight:900; box-shadow:0 0 28px var(--mint); }
+    .game-status { display:flex; justify-content:space-between; color:var(--muted); font-size:.8rem; }
+    .game-status strong { color:var(--ink); }
+    @media (max-width: 900px) { .atlas { grid-template-columns:1fr; } .stage, .details { min-height: unset; } .stage { min-height: 530px; } .cards { grid-template-columns:repeat(2,1fr); } .progress-panel { grid-template-columns:1fr; } .section-head { align-items:flex-start; flex-direction:column; } .section-head p { text-align:left; } }
+    @media (max-width: 560px) { .topbar { flex-direction:column; } .badge { white-space:normal; } .constellation { gap:0; } .orb { width:48%; } .bridge { left:40%; right:40%; } .cards { grid-template-columns:1fr; } .principles { align-items:flex-start; flex-direction:column; gap:10px; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Brain + Heart Gym · first garden</div>
+        <h1>Grow the capacities you use to meet the world.</h1>
+        <p class="lede">A playful atlas of focus, memory, patience, recovery, and connection—where every game is a small experiment in being human.</p>
+      </div>
+      <div class="badge"><strong>Prototype 01</strong><br />browser-first · sensor-ready later</div>
+    </header>
+
+    <section class="atlas" aria-label="Skill atlas">
+      <div class="stage">
+        <div class="stage-label"><span>Choose a capacity</span><span id="nodeHint">12 living nodes</span></div>
+        <div class="stage-progress"><span>Garden energy</span><div class="progress-track"><div class="progress-fill" id="gardenFill"></div></div><strong id="gardenPercent">0%</strong></div>
+        <div class="constellation">
+          <svg class="connections" viewBox="0 0 300 220" aria-hidden="true"><line data-link="focus-memory" x1="53" y1="48" x2="247" y2="48"/><line data-link="focus-switch" x1="53" y1="48" x2="46" y2="111"/><line data-link="memory-plan" x1="247" y1="48" x2="254" y2="111"/><line data-link="switch-react" x1="46" y1="111" x2="150" y2="184"/><line data-link="plan-react" x1="254" y1="111" x2="150" y2="184"/><line data-link="breathe-calm" x1="53" y1="48" x2="247" y2="48"/><line data-link="breathe-recover" x1="53" y1="48" x2="46" y2="111"/><line data-link="calm-notice" x1="247" y1="48" x2="254" y2="111"/><line data-link="recover-connect" x1="46" y1="111" x2="150" y2="184"/><line data-link="notice-connect" x1="254" y1="111" x2="150" y2="184"/></svg>
+          <div class="orb brain" aria-label="Brain skills">
+            <svg viewBox="0 0 260 300" role="img" aria-label="Interactive brain skills">
+              <defs><linearGradient id="brainFill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1c6a82" stop-opacity=".58"/><stop offset="1" stop-color="#0a2b3e" stop-opacity=".65"/></linearGradient></defs>
+              <path d="M130 30c-30-22-68-4-67 31-29-2-45 23-30 47-27 16-21 51 8 58-17 29 5 59 35 55 6 37 50 48 69 21 19 27 63 16 69-21 30 4 52-26 35-55 29-7 35-42 8-58 15-24-1-49-30-47 1-35-37-53-67-31-11-18-29-18-40 0z" fill="url(#brainFill)" stroke="#74e6ff" stroke-opacity=".62" stroke-width="2"/>
+              <path d="M130 34v204M69 93c24 14 30 27 20 45s-2 33 17 41M191 93c-24 14-30 27-20 45s2 33-17 41M80 66c20 4 31 17 27 35M180 66c-20 4-31 17-27 35M57 140c22 3 31 15 30 30M203 140c-22 3-31 15-30 30" fill="none" stroke="#8cecff" stroke-opacity=".3" stroke-width="2"/>
+              <g class="node brain-node" data-skill="focus" transform="translate(76 75)"><circle r="18" fill="#0d5268" stroke="currentColor"/><text y="1">Focus</text></g>
+              <g class="node brain-node" data-skill="memory" transform="translate(184 75)"><circle r="18" fill="#0d5268" stroke="currentColor"/><text y="1">Memory</text></g>
+              <g class="node brain-node" data-skill="switch" transform="translate(66 155)"><circle r="18" fill="#0d5268" stroke="currentColor"/><text y="1">Switch</text></g>
+              <g class="node brain-node" data-skill="plan" transform="translate(194 155)"><circle r="18" fill="#0d5268" stroke="currentColor"/><text y="1">Plan</text></g>
+              <g class="node brain-node" data-skill="react" transform="translate(130 222)"><circle r="18" fill="#0d5268" stroke="currentColor"/><text y="1">React</text></g>
+            </svg>
+            <div class="orb-name">Mind</div>
+          </div>
+          <div class="bridge"></div>
+          <div class="orb heart" aria-label="Heart and regulation skills">
+            <svg viewBox="0 0 260 300" role="img" aria-label="Interactive heart regulation skills">
+              <defs><linearGradient id="heartFill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8f2d67" stop-opacity=".62"/><stop offset="1" stop-color="#3a173d" stop-opacity=".7"/></linearGradient></defs>
+              <path d="M130 248S39 187 39 105C39 53 102 35 130 82c28-47 91-29 91 23 0 82-91 143-91 143z" fill="url(#heartFill)" stroke="#ff86ba" stroke-opacity=".75" stroke-width="2"/>
+              <path d="M130 78c-18 17-16 32 0 48 16-16 18-31 0-48zm-41 53c21 4 31 17 27 35m55-35c-21 4-31 17-27 35M79 180c19-5 33 1 39 18m63-18c-19-5-33 1-39 18" fill="none" stroke="#ffb2d2" stroke-opacity=".35" stroke-width="2"/>
+              <g class="node heart-node" data-skill="breathe" transform="translate(79 93)"><circle r="18" fill="#71305e" stroke="currentColor"/><text y="1">Breathe</text></g>
+              <g class="node heart-node" data-skill="calm" transform="translate(181 93)"><circle r="18" fill="#71305e" stroke="currentColor"/><text y="1">Calm</text></g>
+              <g class="node heart-node" data-skill="recover" transform="translate(73 163)"><circle r="18" fill="#71305e" stroke="currentColor"/><text y="1">Recover</text></g>
+              <g class="node heart-node" data-skill="notice" transform="translate(187 163)"><circle r="18" fill="#71305e" stroke="currentColor"/><text y="1">Notice</text></g>
+              <g class="node heart-node" data-skill="connect" transform="translate(130 223)"><circle r="18" fill="#71305e" stroke="currentColor"/><text y="1">Connect</text></g>
+            </svg>
+            <div class="orb-name">State</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="details" aria-live="polite">
+        <div>
+          <div class="selection-kicker" id="selectionKicker">Selected capacity</div>
+          <h2 id="selectionTitle">Focus</h2>
+          <p id="selectionCopy">The ability to stay with a chosen signal while the world offers other things to notice.</p>
+          <div class="skill-tags" id="skillTags"><span class="tag primary">Primary skill</span><span class="tag">attention</span><span class="tag">inhibition</span></div>
+          <div class="metric" id="skillMetrics"><div><small>Practice signal</small><strong>accuracy + consistency</strong></div><div><small>Heart link</small><strong>calm under pressure</strong></div></div>
+        </div>
+        <div>
+          <button class="cta" id="startBtn">Try a 2-minute practice ↗</button>
+          <p class="micro" id="selectionNote">This is a skill practice, not a diagnosis or a promise of permanent enhancement.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="library" aria-labelledby="libraryTitle">
+      <div class="section-head"><div><div class="eyebrow">The game shelf</div><h2 id="libraryTitle">Games for <span id="librarySkill">Focus</span></h2></div><p>Every game has a primary capacity, secondary effects, and a clear measure of what happened.</p></div>
+      <div class="cards" id="gameCards"></div>
+      <div class="progress-panel">
+        <div class="progress-card">
+          <h3>What is coming alive</h3>
+          <p>Each completed practice adds a little energy to that capacity. As capacities grow together, the connecting pathways wake up too.</p>
+          <div class="stat-row"><span>Practices completed</span><strong id="practiceCount">0</strong></div>
+          <div class="progress-track"><div class="progress-fill" id="practiceFill"></div></div>
+          <div class="stat-row"><span>Connections awakened</span><strong id="connectionCount">0 / 5</strong></div>
+          <div class="progress-track"><div class="progress-fill" id="connectionFill"></div></div>
+        </div>
+        <div class="reflection-card">
+          <h3>Reflection room · coming next</h3>
+          <p>After a game, choose a question instead of receiving a grade. The garden remembers the practice and the person gets to name the experience.</p>
+          <div class="reflection-prompts"><span class="prompt">What did you notice?</span><span class="prompt">Where did you persist?</span><span class="prompt">What changed after a pause?</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="principles"><h2>The inner garden</h2><p>Optional reflection practices inspired by Steiner’s six exercises sit beside the games. They are clearly marked as contemplative traditions—not disguised as neuroscience—and invite children to notice how they choose, persist, recover, and revise.</p></section>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <button class="close" id="closeModal" aria-label="Close">×</button>
+      <div class="eyebrow" id="modalKicker">Live practice · Focus</div>
+      <h2 id="modalTitle">Signal Watch</h2>
+      <p class="lede" id="modalCopy" style="font-size:.95rem">Tap the mint signal as soon as it appears. Ignore the empty board. We are measuring a moment of attention, not judging you.</p>
+      <div class="target-board" id="targetBoard"><div class="target" id="target">+</div></div>
+      <div class="game-status"><span>Hits <strong id="hits">0</strong></span><span>Best response <strong id="best">—</strong></span><span>Time <strong id="time">10</strong>s</span></div>
+      <button class="cta" style="margin-top:18px;width:100%" id="gameStart">Start round</button>
+    </div>
+  </div>
+
+  <script>
+    const skills = {
+      focus: { title:'Focus', kind:'Mind capacity', copy:'The ability to stay with a chosen signal while the world offers other things to notice.', tags:['attention','inhibition'], signal:'accuracy + consistency', heart:'calm under pressure', note:'A validated attention-style task. It does not claim permanent cognitive enhancement.', games:[['Signal Watch','Find the target while distractions stay quiet.','3 min · solo','Validated task construct'],['Quiet Quest','Keep a lantern lit by returning to one chosen point.','5 min · solo','Reflective practice'],['Trail Together','Cooperate with a partner to track a changing pattern.','7 min · co-op','Skill practice']] },
+      memory: { title:'Memory', kind:'Mind capacity', copy:'Hold a detail, connect it to something meaningful, and bring it back when it is needed.', tags:['working memory','recall'], signal:'recall + sequence', heart:'steady pacing', note:'One game can practice recall without proving broad memory improvement.', games:[['Constellation Recall','Remember which stars changed places.','4 min · solo','Skill practice'],['Story Seeds','Build a story from a handful of images.','6 min · solo','Promising training'],['Pair Path','Match pairs while the garden rearranges itself.','3 min · solo','Validated task construct']] },
+      switch: { title:'Switch', kind:'Mind capacity', copy:'Move between rules without losing your place, and notice when the rule has changed.', tags:['flexibility','updating'], signal:'switch cost + accuracy', heart:'recover between rules', note:'Cognitive flexibility is distributed and context-dependent; the map is a guide, not a scan.', games:[['Rule Garden','Sort the same shapes by a changing rule.','5 min · solo','Validated task construct'],['Two Doors','Change strategies when the path stops paying off.','7 min · solo','Skill practice'],['Rhythm Relay','Pass a pattern between two changing tempos.','4 min · co-op','Experimental']] },
+      plan: { title:'Plan', kind:'Mind capacity', copy:'Imagine a few steps ahead, choose a route, and adapt when the world changes the plan.', tags:['sequencing','reasoning'], signal:'steps + efficiency', heart:'patience with delay', note:'Planning games measure decisions inside the game; real-world transfer should be tested separately.', games:[['River Builder','Place bridges before the water rises.','6 min · solo','Skill practice'],['Resource Moon','Balance limited supplies across a small settlement.','8 min · solo','Experimental'],['Route Makers','Build a route together, then explain the choice.','7 min · co-op','Reflective practice']] },
+      react: { title:'React', kind:'Mind capacity', copy:'Notice a meaningful change and respond with accuracy rather than rushing toward every signal.', tags:['response time','selectivity'], signal:'reaction + false alarms', heart:'calm activation', note:'Fast is not always better. The garden tracks accuracy and false alarms together.', games:[['Flash Field','Respond to the target while ignoring near-matches.','2 min · solo','Validated task construct'],['Beat Drop','Catch the beat only when the pattern calls for it.','4 min · solo','Skill practice'],['Signal Duo','Coordinate a shared response without speaking.','5 min · co-op','Experimental']] },
+      breathe: { title:'Breathe', kind:'Heart / regulation', copy:'Use a gentle rhythm to notice the body’s changing state and create a little more room to choose.', tags:['paced breathing','interoception'], signal:'breath steadiness', heart:'self-observation', note:'Stop if dizzy or uncomfortable. Breathing practice is not medical treatment.', games:[['Tide Breath','Follow a soft tide in and out without forcing the breath.','2 min · solo','Reflective practice'],['Lantern Pace','Keep the lantern bright with an easy, even rhythm.','5 min · solo','HRV biofeedback-ready'],['Breath Bridge','Match a shared pace and notice when it changes.','4 min · co-op','Skill practice']] },
+      calm: { title:'Calm', kind:'Heart / regulation', copy:'Practice staying connected to a chosen action while activation rises and falls.', tags:['arousal','choice'], signal:'steady choices', heart:'calm under pressure', note:'Calm is not the absence of energy. This room practices choice inside changing states.', games:[['Soft Landing','Guide a falling shape without chasing every movement.','4 min · solo','Skill practice'],['Warm Current','Keep attention on a warm point as the field shifts.','3 min · solo','Reflective practice'],['Calm Compass','Choose the next move after a surprising event.','5 min · solo','Experimental']] },
+      recover: { title:'Recover', kind:'Heart / regulation', copy:'Notice what happens after challenge: how quickly can you return to a comfortable, usable state?', tags:['recovery','regulation'], signal:'return-to-baseline trend', heart:'personal baseline', note:'Recovery is personal. Compare your own sessions under similar conditions, never children against each other.', games:[['Reset Garden','After each challenge, guide the garden back to balance.','5 min · solo','Skill practice'],['Pulse Pause','Alternate a challenge with a quiet reset.','6 min · solo','HRV biofeedback-ready'],['Return Together','Help a shared landscape recover after disruption.','7 min · co-op','Reflective practice']] },
+      notice: { title:'Notice', kind:'Heart / regulation', copy:'Name what is happening inside without turning a feeling into a verdict about yourself.', tags:['interoception','emotion labeling'], signal:'state vocabulary', heart:'self-compassion', note:'This is reflection, not diagnosis. A low signal never means a person is failing.', games:[['Weather Report','Give changing inner weather a precise, kind name.','3 min · solo','Reflective practice'],['Body Map','Notice where a small change shows up first.','5 min · solo','Reflective practice'],['Signal Story','Separate sensation, story, and choice.','7 min · guided','Experimental']] },
+      connect: { title:'Connect', kind:'Heart / regulation', copy:'Coordinate attention with another person: listen, respond, and leave room for their signal.', tags:['social attention','empathy'], signal:'turn-taking + repair', heart:'shared rhythm', note:'Connection is practiced through interaction, not reduced to a single score.', games:[['Shared Rhythm','Keep a pattern alive together without taking over.','4 min · co-op','Skill practice'],['Mirror Garden','Reflect a partner’s movement, then add your own.','5 min · co-op','Reflective practice'],['Repair Quest','Find a next move after the pattern breaks.','7 min · co-op','Experimental']] }
+    };
+    let current = 'focus';
+    let activeGame = { title:'Signal Watch', skill:'focus', mode:'signal' };
+    const progress = JSON.parse(localStorage.getItem('skill-garden-progress') || '{}');
+    const gameCopy = {
+      focus: 'Tap the mint signal as soon as it appears. Ignore the empty board. We are measuring a moment of attention, not judging you.',
+      memory: 'Watch the signal, hold its place in mind, and tap when it returns. This first memory chamber is a small prototype of the larger game.',
+      breathe: 'Let the signal become a tide. Follow its gentle rhythm and notice whether you can stay with the cycle without forcing your breath.',
+      switch: 'Respond to the signal, then be ready for the rule to change. Flexibility is the practice, not speed alone.',
+      plan: 'Choose a signal, hold the next step in mind, and respond without rushing the route.',
+      react: 'Tap the mint signal as soon as it appears. Accuracy and false alarms matter together.',
+      calm: 'Keep your attention available while the signal arrives unpredictably. A pause is part of the practice.',
+      recover: 'Complete a short challenge, then notice how quickly you return to a usable state.',
+      notice: 'Use the signal as an anchor. When it appears, notice your first impulse before choosing to respond.',
+      connect: 'A shared version is coming. For now, practice leaving room between signal and response.'
+    };
+    function recordPractice(skillKey) {
+      progress[skillKey] = (progress[skillKey] || 0) + 1;
+      localStorage.setItem('skill-garden-progress', JSON.stringify(progress));
+      updateProgress();
+    }
+    function updateProgress() {
+      const total = Object.values(progress).reduce((a,b) => a+b, 0);
+      const energy = Math.min(100, total * 8);
+      $('gardenFill').style.width = `${energy}%`; $('gardenPercent').textContent = `${energy}%`;
+      $('practiceCount').textContent = total; $('practiceFill').style.width = `${Math.min(100, total * 10)}%`;
+      const links = [['focus','memory'],['focus','switch'],['memory','plan'],['switch','react'],['breathe','recover']].filter(([a,b]) => (progress[a] || 0) > 0 && (progress[b] || 0) > 0).length;
+      $('connectionCount').textContent = `${links} / 5`; $('connectionFill').style.width = `${links * 20}%`;
+      document.querySelectorAll('.orb').forEach(orb => orb.classList.toggle('energized', total >= 3));
+      document.querySelectorAll('.connections line').forEach(line => line.classList.toggle('awake', links > 0));
+    }
+    function launchGame(title, skillKey) {
+      activeGame = { title, skill: skillKey, mode:'signal' };
+      $('modalKicker').textContent = `Live practice · ${skills[skillKey].title}`;
+      $('modalTitle').textContent = title; $('modalCopy').textContent = gameCopy[skillKey] || gameCopy.focus;
+      $('gameStart').textContent = 'Start round'; $('gameStart').disabled = false; $('time').textContent = '10'; $('hits').textContent = '0'; $('best').textContent = '—';
+      $('modalBackdrop').classList.add('open');
+    }
+    const $ = id => document.getElementById(id);
+    function render(skillKey) {
+      current = skillKey; const s = skills[skillKey];
+      $('selectionKicker').textContent = s.kind; $('selectionTitle').textContent = s.title; $('selectionCopy').textContent = s.copy;
+      $('skillTags').innerHTML = '<span class="tag primary">Primary skill</span>' + s.tags.map(t => `<span class="tag">${t}</span>`).join('');
+      $('skillMetrics').innerHTML = `<div><small>Practice signal</small><strong>${s.signal}</strong></div><div><small>Heart link</small><strong>${s.heart}</strong></div>`;
+      $('selectionNote').textContent = s.note; $('librarySkill').textContent = s.title;
+      $('gameCards').innerHTML = s.games.map((g, i) => `<article class="game-card"><div class="type">${g[3]}</div><h3>${g[0]}</h3><p>${g[1]}</p><div class="card-foot"><span>${g[2]}</span><button class="play-card" data-game="${g[0]}" data-skill="${skillKey}">${i === 0 ? 'Play' : 'Open'} ↗</button></div></article>`).join('');
+      document.querySelectorAll('.play-card').forEach(btn => btn.addEventListener('click', () => launchGame(btn.dataset.game, btn.dataset.skill)));
+      document.querySelectorAll('.node').forEach(n => n.classList.toggle('active', n.dataset.skill === skillKey));
+      $('startBtn').textContent = skillKey === 'focus' ? 'Try a 2-minute practice ↗' : `Explore ${s.title} practice ↗`;
+    }
+    document.querySelectorAll('.node').forEach(node => node.addEventListener('click', () => render(node.dataset.skill)));
+    $('startBtn').addEventListener('click', () => launchGame('Signal Watch', current));
+    $('closeModal').addEventListener('click', () => $('modalBackdrop').classList.remove('open'));
+    $('modalBackdrop').addEventListener('click', e => { if (e.target === $('modalBackdrop')) $('modalBackdrop').classList.remove('open'); });
+
+    // Tiny playable first exercise: a non-diagnostic reaction/attention round.
+    let running = false, hits = 0, best = null, startedAt = 0, timer, spawnTimer, endsAt;
+    function spawn() { if (!running) return; const board = $('targetBoard'); const t = $('target'); t.style.left = `${8 + Math.random() * 82}%`; t.style.top = `${10 + Math.random() * 72}%`; t.style.display = 'grid'; startedAt = performance.now(); }
+    $('target').addEventListener('click', e => { e.stopPropagation(); if (!running) return; const ms = Math.round(performance.now() - startedAt); hits++; best = best === null ? ms : Math.min(best, ms); $('hits').textContent = hits; $('best').textContent = `${best} ms`; $('target').style.display = 'none'; clearTimeout(spawnTimer); spawnTimer = setTimeout(spawn, 480 + Math.random() * 800); });
+    $('gameStart').addEventListener('click', () => { if (running) return; running = true; hits = 0; best = null; $('hits').textContent = '0'; $('best').textContent = '—'; endsAt = Date.now() + 10000; $('gameStart').textContent = 'Round running…'; $('gameStart').disabled = true; spawn(); timer = setInterval(() => { const remaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)); $('time').textContent = remaining; if (remaining <= 0) { clearInterval(timer); clearTimeout(spawnTimer); running = false; $('target').style.display = 'none'; $('gameStart').disabled = false; $('gameStart').textContent = `Round complete · ${hits} hits`; recordPractice(activeGame.skill); } }, 100); });
+    updateProgress(); render('focus');
+  </script>
+</body>
+</html>
